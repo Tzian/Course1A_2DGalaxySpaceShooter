@@ -5,7 +5,7 @@ public class PowerUp : MonoBehaviour
 {
 #pragma warning disable 0649
 
-	// 0 = triple shot, 1 = speed, 2 = shields
+	// 0 = triple shot, 1 = scatter shot, 2 = shields, 3 = health +1 
 	[SerializeField] int powerUpId;
 #pragma warning restore
 	[SerializeField] float speed = 3;
@@ -37,13 +37,17 @@ public class PowerUp : MonoBehaviour
 					break;
 
 				case 1:
-					player.EnableSpeedBoost();
+					player.EnableScatterShot();
 					break;
 
 				case 2:
 					player.EnableShield();
 					break;
 
+				case 3:
+					player.RepairShip();
+					break;
+				
 				default:
 					Debug.Log ("Trying to access a Power Up ID that does not exist!");
 					break;

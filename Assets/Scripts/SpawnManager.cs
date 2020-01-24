@@ -9,6 +9,10 @@ public class SpawnManager : MonoBehaviour
 	[SerializeField] GameObject enemyPrefab;
 	[SerializeField] GameObject enemySpawns;
 	[SerializeField] GameObject[] powerUps;
+	[SerializeField] GameObject healthPickup;
+	[SerializeField] GameObject scatterShotPickup;
+	
+	
 #pragma warning restore
 	bool stopSpawning;
 	List <GameObject> enemyPool;

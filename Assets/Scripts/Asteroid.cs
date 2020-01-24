@@ -10,7 +10,6 @@ public class Asteroid : MonoBehaviour
 	SpawnManager spawnManager;
 	float rotateSpeed;
 	bool isColliding;
-	AudioSource explosionAudio;
 	int randomDir;
 
 	void Awake()
@@ -19,12 +18,6 @@ public class Asteroid : MonoBehaviour
 		if (spawnManager == null)
 		{
 			Debug.LogError ("Spawn Manager Not Found!!");
-		}
-
-		explosionAudio = GameObject.Find ("AudioManager").GetComponent <AudioSource>();
-		if (explosionAudio == null)
-		{
-			Debug.LogError ("Explosion Audio Source Not Found!!");
 		}
 
 		rotateSpeed = Random.Range (3, 10f);
@@ -57,7 +50,6 @@ public class Asteroid : MonoBehaviour
 			other.gameObject.SetActive (false);
 
 			Instantiate (explosion, transform.position, Quaternion.identity);
-			explosionAudio.Play();
 			StartCoroutine (DelayDeactivate());
 			spawnManager.StartSpawning();
 		}

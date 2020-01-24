@@ -1,21 +1,26 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-
+[RequireComponent(typeof(AudioSource))]
 public class Enemy : MonoBehaviour
 {
 	static readonly int OnEnemyDeath = Animator.StringToHash ("OnEnemyDeath");
-	Animator animator;
-	float canFire = -1;
-	Collider2D enemyCollider;
-	AudioSource explosionAudio;
-	float fireRate;
-	bool isColliding;
-	LaserPools laserPools;
-	Player player;
+#pragma warning disable 0649
+	[SerializeField] AudioClip explosionAudioClip;
+#pragma warning restore
 	[SerializeField] float speed = 3f;
+
+	Player player;
+
+	Animator animator;
 	SpriteRenderer spriteRenderer;
 	Sprite startingSprite;
+	Collider2D enemyCollider;
+	LaserPools laserPools;
+
+	float canFire = -1;
+	float fireRate;
+	bool isColliding;
 	bool stopFiring;
 
 	void Awake()
@@ -36,12 +41,6 @@ public class Enemy : MonoBehaviour
 		if (enemyCollider == null)
 		{
 			Debug.LogError ("Cannot get collider!");
-		}
-
-		explosionAudio = GameObject.Find ("AudioManager").GetComponent <AudioSource>();
-		if (explosionAudio == null)
-		{
-			Debug.LogError ("Explosion Audio Source Not Found!!");
 		}
 
 		spriteRenderer = GetComponent <SpriteRenderer>();
@@ -128,8 +127,8 @@ public class Enemy : MonoBehaviour
 	IEnumerator DeactivateEnemy()
 	{
 		animator.SetTrigger (OnEnemyDeath);
-		explosionAudio.Play();
 		speed = 0;
+		AudioSource.PlayClipAtPoint(explosionAudioClip, transform.position);
 		yield return new WaitForSeconds (2.37f);
 		gameObject.SetActive (false);
 		spriteRenderer.sprite = startingSprite;

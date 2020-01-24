@@ -1,15 +1,18 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-
+[RequireComponent(typeof(AudioSource))]
 public class Player : MonoBehaviour
 {
 #pragma warning disable 0649
 	[SerializeField] GameObject playerShield;
 	[SerializeField] GameObject thrusters;
 	[SerializeField] GameObject[] engines;
-	[SerializeField] AudioClip laserAudioClip;
-	[SerializeField] AudioClip powerUpClip;
+	[SerializeField] AudioClip fuelRechargeAudioClip;
+	[SerializeField] AudioClip powerUpGainedAudioClip;
+	[SerializeField] AudioClip singleShotAudioClip;
+	[SerializeField] AudioClip tripleShotAudioClip;
+	[SerializeField] AudioClip scatterShotAudioClip;
 #pragma warning restore
 	[SerializeField] float speed = 3.5f;
 	[SerializeField] float fireRate = 0.15f;
@@ -23,16 +26,30 @@ public class Player : MonoBehaviour
 	SpawnManager spawnManager;
 	GameManager gameManager;
 	UiManager uiManager;
-	AudioSource audioSource;
 	LaserPools laserPools;
 	int score;
 
+	[SerializeField] bool scatterShotEnabled;
 	[SerializeField] bool tripleShotEnabled;
 	[SerializeField] bool shieldEnabled;
 
+	public int thrusterFuel;
+	public bool fuelRecharging;
+	public bool speedBoostEnabled;
+	public int shieldStrength;
+	SpriteRenderer shieldRenderer;
+
+	bool thrustersOnCd;
+
+	
 	void Start()
 	{
 		score        = 0;
+		thrusterFuel = 100;
+		fuelRecharging = false;
+		shieldStrength = 0;
+		thrustersOnCd = false;
+		
 		gameManager = GameObject.Find ("GameManager").GetComponent <GameManager>();
 		if (gameManager == null)
 		{
@@ -60,12 +77,7 @@ public class Player : MonoBehaviour
 		}
 
 		transform.position = new Vector3 (0, -3.5f, 0);
-
-		audioSource = GetComponent <AudioSource>();
-		if (audioSource == null)
-		{
-			Debug.LogError ("Audio Manager Not Found!!");
-		}
+		shieldRenderer = playerShield.GetComponent <SpriteRenderer>();
 	}
 
 	void Update()
@@ -74,25 +86,36 @@ public class Player : MonoBehaviour
 		verticalInput   = Input.GetAxis ("Vertical");
 
 		ConstrainPlayer();
-
-		if (!(Time.time > canFire))
+		
+		if (Time.time > canFire)
 		{
-			return;
+			if (Input.GetKeyDown (KeyCode.Space) || Input.GetMouseButtonDown (0))
+			{
+				if (scatterShotEnabled)
+				{
+					SpawnScatterShotLaser();
+				}
+				else if (tripleShotEnabled)
+				{
+					SpawnTripleShotLaser();
+				}
+				else
+				{
+					SpawnSingleShotLaser();
+				}
+			}
 		}
+		
+		uiManager.UpdateThrusterFuel(thrusterFuel);
 
-		if (Input.GetKeyDown (KeyCode.Space) || Input.GetMouseButtonDown (0))
+		if (Input.GetKeyDown (KeyCode.LeftShift) && fuelRecharging == false)
 		{
-			audioSource.clip = laserAudioClip;
-			if (tripleShotEnabled)
-			{
-				SpawnTripleShot();
-				audioSource.Play();
-			}
-			else
-			{
-				SpawnLaser();
-				audioSource.Play();
-			}
+			EnableSpeedBoost();
+		}
+		
+		if (Input.GetKeyUp (KeyCode.LeftShift))
+		{
+			DisableSpeedBoost();
 		}
 	}
 
@@ -110,9 +133,8 @@ public class Player : MonoBehaviour
 
 	public void EnableTripleShot()
 	{
+		AudioSource.PlayClipAtPoint(powerUpGainedAudioClip, transform.position);
 		tripleShotEnabled = true;
-		audioSource.clip  = powerUpClip;
-		audioSource.Play();
 		StartCoroutine (TripleShotTimer());
 	}
 
@@ -121,37 +143,123 @@ public class Player : MonoBehaviour
 		yield return new WaitForSeconds (10f);
 		tripleShotEnabled = false;
 	}
-
-	public void EnableSpeedBoost()
+	
+	public void EnableScatterShot()
 	{
-		thrusters.SetActive (true);
-		audioSource.clip = powerUpClip;
-		audioSource.Play();
-		speed *= 2;
-		StartCoroutine (SpeedBoostTimer());
+		AudioSource.PlayClipAtPoint (powerUpGainedAudioClip, transform.position);
+		scatterShotEnabled = true;
+		StartCoroutine (ScatterShotTimer());
 	}
 
-	IEnumerator SpeedBoostTimer()
+	IEnumerator ScatterShotTimer()
 	{
-		yield return new WaitForSeconds (10f);
+		yield return new WaitForSeconds (5f);
+		scatterShotEnabled = false;
+	}
+
+	void EnableSpeedBoost()
+	{
+		speedBoostEnabled = true;
+		thrusters.SetActive (true);
+		speed *= 2;
+		StartCoroutine (DepleteThrusterFuel());
+	}
+
+	void DisableSpeedBoost()
+	{
+		if (speedBoostEnabled == false)
+		{
+			return;
+		}
+		speedBoostEnabled = false;
+		thrusters.SetActive(false);
 		speed /= 2;
-		thrusters.SetActive (false);
+		StopCoroutine (DepleteThrusterFuel());
+	}
+	
+	IEnumerator DepleteThrusterFuel()
+	{
+		while (thrusters.activeInHierarchy)
+		{
+			yield return new WaitForSeconds (0.5f);
+			thrusterFuel -= 10;
+			if (thrusterFuel <= 0 && thrustersOnCd == false)
+			{
+				thrusterFuel = 0;
+				thrustersOnCd = true;
+				yield return StartCoroutine(ThrusterFuelRechargeCd());
+			}
+		}
+	}
+	
+	IEnumerator ThrusterFuelRechargeCd()
+	{
+		DisableSpeedBoost();
+		fuelRecharging = true;
+
+		yield return new WaitForSeconds (10f);
+		yield return StartCoroutine(RechargeFuel());
+	}
+
+	IEnumerator RechargeFuel()
+	{
+		AudioSource.PlayClipAtPoint(fuelRechargeAudioClip, transform.position);
+		while (thrusterFuel != 100)
+		{
+			yield return new WaitForSeconds (0.05f);
+			thrusterFuel += 10;
+		}
+		fuelRecharging = false;
+		thrustersOnCd = false;
 	}
 
 	public void EnableShield()
 	{
+		AudioSource.PlayClipAtPoint (powerUpGainedAudioClip, transform.position);
+		shieldStrength = 3;
+		UpdateShieldStrengthImage();
 		shieldEnabled    = true;
-		audioSource.clip = powerUpClip;
-		audioSource.Play();
 		playerShield.SetActive (true);
 	}
 
+	public void RepairShip()
+	{
+		AudioSource.PlayClipAtPoint (powerUpGainedAudioClip, transform.position);
+		lives += 1;
+		uiManager.UpdateLivesImage (lives);
+
+		switch (lives)
+		{
+			case 2:
+				engines[Random.Range (0, 2)].SetActive (false);
+				break;
+
+			case 3:
+				if (engines[1].activeInHierarchy)
+				{
+					engines[1].SetActive (false);
+				}
+				else
+				{
+					engines[0].SetActive (false);
+				}
+
+				break;
+		}
+	}
+	
 	public void Damage()
 	{
 		if (shieldEnabled)
 		{
-			shieldEnabled = false;
-			playerShield.SetActive (false);
+			shieldStrength -= 1;
+			UpdateShieldStrengthImage();
+
+			if (shieldStrength <= 0)
+			{
+				shieldEnabled = false;
+				playerShield.SetActive (false);
+			}
 			return;
 		}
 
@@ -192,22 +300,52 @@ public class Player : MonoBehaviour
 		uiManager.UpdateLivesImage (lives);
 	}
 
-	void SpawnLaser()
+	void UpdateShieldStrengthImage()
+	{
+		switch (shieldStrength)
+		{
+			case 3:
+				shieldRenderer.color = new Color (1, 1, 1, 1);
+				break;
+
+			case 2:
+				shieldRenderer.color = new Color (0.6f, 0.6f, 0.6f, 1);
+				break;
+
+			case 1:
+				shieldRenderer.color = new Color (0.3f, 0.3f, 0.3f, 1);
+				break;
+		}
+	}
+
+	void SpawnSingleShotLaser()
 	{
 		canFire = Time.time + fireRate;
 
-		GameObject laser = laserPools.FireLaser();
-		laser.SetActive (true);
-		laser.transform.position = transform.position + laserSpawnOffset;
+		GameObject singleShotLaser = laserPools.FireSingleShotLaser();
+		singleShotLaser.SetActive (true);
+		singleShotLaser.transform.position = transform.position + laserSpawnOffset;
+		AudioSource.PlayClipAtPoint (singleShotAudioClip, singleShotLaser.transform.position);
 	}
 
-	void SpawnTripleShot()
+	void SpawnTripleShotLaser()
 	{
 		canFire = Time.time + fireRate;
 
 		GameObject tripleShotLaser = laserPools.FireTripleShotLaser();
 		tripleShotLaser.SetActive (true);
 		tripleShotLaser.transform.position = transform.position;
+		AudioSource.PlayClipAtPoint (tripleShotAudioClip, tripleShotLaser.transform.position);
+	}
+
+	void SpawnScatterShotLaser()
+	{
+		canFire = Time.time + fireRate;
+
+		GameObject fireScatterShotLaser = laserPools.FireScatterShotLaser();
+		fireScatterShotLaser.SetActive (true);
+		fireScatterShotLaser.transform.position = transform.position;
+		AudioSource.PlayClipAtPoint (scatterShotAudioClip, fireScatterShotLaser.transform.position);
 	}
 
 	void MovePlayer()

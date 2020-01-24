@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
@@ -11,6 +10,10 @@ public class GameManager : MonoBehaviour
 	bool gameOver;
 	int currentScore;
 
+	void Start()
+	{
+		Cursor.lockState = CursorLockMode.Locked;
+	}
 
 	void Update()
 	{
@@ -27,12 +30,14 @@ public class GameManager : MonoBehaviour
 			{
 				Time.timeScale = 0;
 				pauseUi.gameObject.SetActive (true);
+				Cursor.lockState = CursorLockMode.None;
 				return;
 			}
 
 			if (Time.timeScale == 0)
 			{
 				pauseUi.gameObject.SetActive (false);
+				Cursor.lockState = CursorLockMode.Locked;
 				Time.timeScale = 1;
 			}
 		}

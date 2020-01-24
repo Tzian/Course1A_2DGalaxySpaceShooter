@@ -6,12 +6,28 @@ using UnityEngine.UI;
 public class UiManager : MonoBehaviour
 {
 #pragma warning disable 0649
-	[SerializeField] Text scoreText;
-	[SerializeField] Text highScoreText;
-	[SerializeField] Image livesImage;
+	
 	[SerializeField] Text gameOverText;
 	[SerializeField] Text restartLevelText;
+
+	[Header("HUD Displays")]
+	[SerializeField] Text scoreText;
+	[SerializeField] Text highScoreText;
+	
+	[SerializeField] Image livesImage;
+	[SerializeField] Image thrusterFuelImage;
+	//[SerializeField] Image standardAmmoCountImage;
+	//[SerializeField] Image specialAmmoCountImage;
+	//TODO: the above will replace the below once we have the sprites ready
+	[SerializeField] Text standardAmmoCountText;
+	[SerializeField] Text specialAmmoCountText;
+
+	[Header("Sprite Arrays")] 
 	[SerializeField] Sprite[] livesSprites;
+	[SerializeField] Sprite[] fuelSprites;
+	[SerializeField] Sprite[] stdAmmoSprites;
+	[SerializeField] Sprite[] spcAmmoSprites;
+
 #pragma warning restore
 	GameManager gameManager;
 	int currentScore;
@@ -24,9 +40,7 @@ public class UiManager : MonoBehaviour
 			Debug.LogError ("Game Manager is NULL");
 		}
 		int highScore = PlayerPrefs.GetInt("HighScore");
-		Debug.Log ("Start gets high score of  " + highScore);
-		highScoreText.text = "High Score:  " + highScore;
-		Debug.Log ("high score text is showing " + highScoreText.text);
+		highScoreText.text = highScore.ToString();
 		gameOverText.gameObject.SetActive (false);
 		restartLevelText.gameObject.SetActive (false);
 		UpdateScoreText (0);
@@ -35,7 +49,7 @@ public class UiManager : MonoBehaviour
 	public void UpdateScoreText (int updatedScore)
 	{
 		currentScore = updatedScore;
-		scoreText.text = "Score:  " + currentScore;
+		scoreText.text = currentScore.ToString();
 	}
 
 	public void UpdateLivesImage (int currentLives)
@@ -53,6 +67,21 @@ public class UiManager : MonoBehaviour
 			restartLevelText.gameObject.SetActive (true);
 			gameManager.GameOver();
 		}
+	}
+
+	public void UpdateThrusterFuel (int thrusterFuel)
+	{
+		thrusterFuelImage.fillAmount = (float) thrusterFuel / 100;
+	}
+
+	public void UpdateStandardAmmoCount (int stdAmmoCnt)
+	{
+		standardAmmoCountText.text = stdAmmoCnt.ToString();
+	}
+
+	public void UpdateSpecialAmmoCount (int spcAmmoCnt)
+	{
+		specialAmmoCountText.text = spcAmmoCnt.ToString();
 	}
 
 	IEnumerator DisplayGameOverText()
