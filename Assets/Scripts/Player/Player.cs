@@ -40,6 +40,7 @@ public class Player : MonoBehaviour
 	SpriteRenderer shieldRenderer;
 
 	bool thrustersOnCd;
+	int stdAmmoCount;
 
 	
 	void Start()
@@ -49,6 +50,7 @@ public class Player : MonoBehaviour
 		fuelRecharging = false;
 		shieldStrength = 0;
 		thrustersOnCd = false;
+		stdAmmoCount = 15;
 		
 		gameManager = GameObject.Find ("GameManager").GetComponent <GameManager>();
 		if (gameManager == null)
@@ -91,18 +93,22 @@ public class Player : MonoBehaviour
 		{
 			if (Input.GetKeyDown (KeyCode.Space) || Input.GetMouseButtonDown (0))
 			{
-				if (scatterShotEnabled)
+				if (stdAmmoCount > 0)
 				{
-					SpawnScatterShotLaser();
+					if (scatterShotEnabled)
+					{
+						SpawnScatterShotLaser();
+					}
+					else if (tripleShotEnabled)
+					{
+						SpawnTripleShotLaser();
+					}
+					else
+					{
+						SpawnSingleShotLaser();
+					}
 				}
-				else if (tripleShotEnabled)
-				{
-					SpawnTripleShotLaser();
-				}
-				else
-				{
-					SpawnSingleShotLaser();
-				}
+				uiManager.UpdateStandardAmmoCount (stdAmmoCount);
 			}
 		}
 		
@@ -131,123 +137,6 @@ public class Player : MonoBehaviour
 		gameManager.UpdateScore (score);
 	}
 
-	public void EnableTripleShot()
-	{
-		AudioSource.PlayClipAtPoint(powerUpGainedAudioClip, transform.position);
-		tripleShotEnabled = true;
-		StartCoroutine (TripleShotTimer());
-	}
-
-	IEnumerator TripleShotTimer()
-	{
-		yield return new WaitForSeconds (10f);
-		tripleShotEnabled = false;
-	}
-	
-	public void EnableScatterShot()
-	{
-		AudioSource.PlayClipAtPoint (powerUpGainedAudioClip, transform.position);
-		scatterShotEnabled = true;
-		StartCoroutine (ScatterShotTimer());
-	}
-
-	IEnumerator ScatterShotTimer()
-	{
-		yield return new WaitForSeconds (5f);
-		scatterShotEnabled = false;
-	}
-
-	void EnableSpeedBoost()
-	{
-		speedBoostEnabled = true;
-		thrusters.SetActive (true);
-		speed *= 2;
-		StartCoroutine (DepleteThrusterFuel());
-	}
-
-	void DisableSpeedBoost()
-	{
-		if (speedBoostEnabled == false)
-		{
-			return;
-		}
-		speedBoostEnabled = false;
-		thrusters.SetActive(false);
-		speed /= 2;
-		StopCoroutine (DepleteThrusterFuel());
-	}
-	
-	IEnumerator DepleteThrusterFuel()
-	{
-		while (thrusters.activeInHierarchy)
-		{
-			yield return new WaitForSeconds (0.5f);
-			thrusterFuel -= 10;
-			if (thrusterFuel <= 0 && thrustersOnCd == false)
-			{
-				thrusterFuel = 0;
-				thrustersOnCd = true;
-				yield return StartCoroutine(ThrusterFuelRechargeCd());
-			}
-		}
-	}
-	
-	IEnumerator ThrusterFuelRechargeCd()
-	{
-		DisableSpeedBoost();
-		fuelRecharging = true;
-
-		yield return new WaitForSeconds (10f);
-		yield return StartCoroutine(RechargeFuel());
-	}
-
-	IEnumerator RechargeFuel()
-	{
-		AudioSource.PlayClipAtPoint(fuelRechargeAudioClip, transform.position);
-		while (thrusterFuel != 100)
-		{
-			yield return new WaitForSeconds (0.05f);
-			thrusterFuel += 10;
-		}
-		fuelRecharging = false;
-		thrustersOnCd = false;
-	}
-
-	public void EnableShield()
-	{
-		AudioSource.PlayClipAtPoint (powerUpGainedAudioClip, transform.position);
-		shieldStrength = 3;
-		UpdateShieldStrengthImage();
-		shieldEnabled    = true;
-		playerShield.SetActive (true);
-	}
-
-	public void RepairShip()
-	{
-		AudioSource.PlayClipAtPoint (powerUpGainedAudioClip, transform.position);
-		lives += 1;
-		uiManager.UpdateLivesImage (lives);
-
-		switch (lives)
-		{
-			case 2:
-				engines[Random.Range (0, 2)].SetActive (false);
-				break;
-
-			case 3:
-				if (engines[1].activeInHierarchy)
-				{
-					engines[1].SetActive (false);
-				}
-				else
-				{
-					engines[0].SetActive (false);
-				}
-
-				break;
-		}
-	}
-	
 	public void Damage()
 	{
 		if (shieldEnabled)
@@ -300,6 +189,54 @@ public class Player : MonoBehaviour
 		uiManager.UpdateLivesImage (lives);
 	}
 
+	public void StdAmmoPickedUp()
+	{
+		spawnManager.canSpawnAmmoCrate = true;
+		stdAmmoCount = 15;
+		uiManager.UpdateStandardAmmoCount (stdAmmoCount);
+	}
+	
+#region shieldsAndRepair
+	
+	public void EnableShield()
+	{
+		AudioSource.PlayClipAtPoint (powerUpGainedAudioClip, transform.position);
+		shieldStrength = 3;
+		UpdateShieldStrengthImage();
+		shieldEnabled = true;
+		playerShield.SetActive (true);
+	}
+
+	public void RepairShip()
+	{
+		AudioSource.PlayClipAtPoint (powerUpGainedAudioClip, transform.position);
+		if (lives == 3 || lives == 0)
+		{
+			return;
+		}
+		lives += 1;
+		uiManager.UpdateLivesImage (lives);
+
+		switch (lives)
+		{
+			case 2:
+				engines[Random.Range (0, 2)].SetActive (false);
+				break;
+
+			case 3:
+				if (engines[1].activeInHierarchy)
+				{
+					engines[1].SetActive (false);
+				}
+				else
+				{
+					engines[0].SetActive (false);
+				}
+
+				break;
+		}
+	}
+
 	void UpdateShieldStrengthImage()
 	{
 		switch (shieldStrength)
@@ -318,10 +255,102 @@ public class Player : MonoBehaviour
 		}
 	}
 
+#endregion
+	
+	
+#region Thrusters
+
+	void EnableSpeedBoost()
+	{
+		speedBoostEnabled = true;
+		thrusters.SetActive (true);
+		speed *= 2;
+		StartCoroutine (DepleteThrusterFuel());
+	}
+
+	void DisableSpeedBoost()
+	{
+		if (speedBoostEnabled == false)
+		{
+			return;
+		}
+		speedBoostEnabled = false;
+		thrusters.SetActive (false);
+		speed /= 2;
+		StopCoroutine (DepleteThrusterFuel());
+	}
+
+	IEnumerator DepleteThrusterFuel()
+	{
+		while (thrusters.activeInHierarchy)
+		{
+			yield return new WaitForSeconds (0.5f);
+			thrusterFuel -= 10;
+			if (thrusterFuel <= 0 && thrustersOnCd == false)
+			{
+				thrusterFuel  = 0;
+				thrustersOnCd = true;
+				yield return StartCoroutine (ThrusterFuelRechargeCd());
+			}
+		}
+	}
+
+	IEnumerator ThrusterFuelRechargeCd()
+	{
+		DisableSpeedBoost();
+		fuelRecharging = true;
+
+		yield return new WaitForSeconds (10f);
+		yield return StartCoroutine (RechargeFuel());
+	}
+
+	IEnumerator RechargeFuel()
+	{
+		AudioSource.PlayClipAtPoint (fuelRechargeAudioClip, transform.position);
+		while (thrusterFuel != 100)
+		{
+			yield return new WaitForSeconds (0.05f);
+			thrusterFuel += 10;
+		}
+		fuelRecharging = false;
+		thrustersOnCd  = false;
+	}
+
+#endregion
+
+	
+#region Lasers
+
+	public void EnableTripleShot()
+	{
+		AudioSource.PlayClipAtPoint (powerUpGainedAudioClip, transform.position);
+		tripleShotEnabled = true;
+		StartCoroutine (TripleShotTimer());
+	}
+
+	IEnumerator TripleShotTimer()
+	{
+		yield return new WaitForSeconds (10f);
+		tripleShotEnabled = false;
+	}
+
+	public void EnableScatterShot()
+	{
+		AudioSource.PlayClipAtPoint (powerUpGainedAudioClip, transform.position);
+		scatterShotEnabled = true;
+		StartCoroutine (ScatterShotTimer());
+	}
+
+	IEnumerator ScatterShotTimer()
+	{
+		yield return new WaitForSeconds (5f);
+		scatterShotEnabled = false;
+	}
+	
 	void SpawnSingleShotLaser()
 	{
-		canFire = Time.time + fireRate;
-
+		canFire      =  Time.time + fireRate;
+		stdAmmoCount -= 1;
 		GameObject singleShotLaser = laserPools.FireSingleShotLaser();
 		singleShotLaser.SetActive (true);
 		singleShotLaser.transform.position = transform.position + laserSpawnOffset;
@@ -330,8 +359,8 @@ public class Player : MonoBehaviour
 
 	void SpawnTripleShotLaser()
 	{
-		canFire = Time.time + fireRate;
-
+		canFire      =  Time.time + fireRate;
+		stdAmmoCount -= 1;
 		GameObject tripleShotLaser = laserPools.FireTripleShotLaser();
 		tripleShotLaser.SetActive (true);
 		tripleShotLaser.transform.position = transform.position;
@@ -340,13 +369,18 @@ public class Player : MonoBehaviour
 
 	void SpawnScatterShotLaser()
 	{
-		canFire = Time.time + fireRate;
-
+		canFire      =  Time.time + fireRate;
+		stdAmmoCount -= 1;
 		GameObject fireScatterShotLaser = laserPools.FireScatterShotLaser();
 		fireScatterShotLaser.SetActive (true);
 		fireScatterShotLaser.transform.position = transform.position;
 		AudioSource.PlayClipAtPoint (scatterShotAudioClip, fireScatterShotLaser.transform.position);
 	}
+
+#endregion
+
+
+#region Player Movement
 
 	void MovePlayer()
 	{
@@ -359,13 +393,16 @@ public class Player : MonoBehaviour
 		Vector3 position = transform.position;
 		transform.position = new Vector3 (position.x, Mathf.Clamp (position.y, -3.9f, 0), 0);
 
-		if (position.x >= 11.2f)
+		if (position.x >= 10.2f)
 		{
-			transform.position = new Vector3 (-11.2f, position.y, 0);
+			transform.position = new Vector3 (-10.2f, position.y, 0);
 		}
-		else if (position.x <= -11.2f)
+		else if (position.x <= -10.2f)
 		{
-			transform.position = new Vector3 (11.2f, position.y, 0);
+			transform.position = new Vector3 (10.2f, position.y, 0);
 		}
 	}
+
+#endregion
+
 }

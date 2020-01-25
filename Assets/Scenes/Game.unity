@@ -1808,16 +1808,20 @@ MonoBehaviour:
   enemyPrefab: {fileID: 5713353075090468826, guid: 2b19a108ced9d1f48ab478504fadb211,
     type: 3}
   enemySpawns: {fileID: 119293677}
-  stdPowerUps:
-  - {fileID: 5937998877417563219, guid: 19fe13d2a234d294ebc36250a430e536, type: 3}
-  - {fileID: 2284654638879246529, guid: 1cb101a94a5e26740a3e90c1d84ac85d, type: 3}
-  shipRepairPowerUp: {fileID: 5937998877417563219, guid: 1efe176ce8916bf46af2db52e9152358,
+  tripleShotPowerUp: {fileID: 2284654638879246529, guid: 1cb101a94a5e26740a3e90c1d84ac85d,
     type: 3}
   scatterShotPowerUp: {fileID: 5937998877417563219, guid: c87177ded7baf2c4c8e73ba0cf004dc6,
+    type: 3}
+  shieldPowerUp: {fileID: 5937998877417563219, guid: 19fe13d2a234d294ebc36250a430e536,
+    type: 3}
+  shipRepairPowerUp: {fileID: 5937998877417563219, guid: 1efe176ce8916bf46af2db52e9152358,
+    type: 3}
+  stdAmmoCrate: {fileID: 5937998877417563219, guid: 5eb6a86ebca622641a86e3bb83259fd8,
     type: 3}
   gameDifficulty: 0
   currentWave: 0
   difficultyStartWait: 0
+  canSpawnAmmoCrate: 0
 --- !u!4 &1362595965
 Transform:
   m_ObjectHideFlags: 0

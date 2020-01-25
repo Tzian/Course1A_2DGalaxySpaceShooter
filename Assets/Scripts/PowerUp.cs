@@ -48,6 +48,10 @@ public class PowerUp : MonoBehaviour
 					player.RepairShip();
 					break;
 				
+				case 4:
+					player.StdAmmoPickedUp();
+					break;
+				
 				default:
 					Debug.Log ("Trying to access a Power Up ID that does not exist!");
 					break;

@@ -145,7 +145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 681755f279d16794780eb097481d1f80, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  powerUpId: 2
+  powerUpId: 5
   speed: 3
 --- !u!95 &5937998877417563218
 Animator:
