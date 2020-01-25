@@ -13,6 +13,7 @@ public class Player : MonoBehaviour
 	[SerializeField] AudioClip singleShotAudioClip;
 	[SerializeField] AudioClip tripleShotAudioClip;
 	[SerializeField] AudioClip scatterShotAudioClip;
+	
 #pragma warning restore
 	[SerializeField] float speed = 3.5f;
 	[SerializeField] float fireRate = 0.15f;
@@ -41,7 +42,9 @@ public class Player : MonoBehaviour
 
 	bool thrustersOnCd;
 	int stdAmmoCount;
-
+	Transform gameCamera;
+	Vector3 cameraStartPos;
+	float cameraShakeDuration;
 	
 	void Start()
 	{
@@ -51,7 +54,14 @@ public class Player : MonoBehaviour
 		shieldStrength = 0;
 		thrustersOnCd = false;
 		stdAmmoCount = 15;
-		
+		cameraShakeDuration = 0;
+
+		gameCamera = GameObject.Find ("Main Camera").GetComponent <Transform>();
+		if (gameCamera == null)
+		{
+			Debug.LogError("Cannot find camera!");
+		}
+		cameraStartPos = gameCamera.position;
 		gameManager = GameObject.Find ("GameManager").GetComponent <GameManager>();
 		if (gameManager == null)
 		{
@@ -84,6 +94,17 @@ public class Player : MonoBehaviour
 
 	void Update()
 	{
+		if (cameraShakeDuration > 0)
+		{
+			gameCamera.transform.localPosition = cameraStartPos + Random.insideUnitSphere * 0.2f;
+			cameraShakeDuration -= Time.deltaTime * 1.0f;
+		}
+		else
+		{
+			cameraShakeDuration = 0f;
+			gameCamera.transform.localPosition = cameraStartPos;
+		}
+		
 		horizontalInput = Input.GetAxis ("Horizontal");
 		verticalInput   = Input.GetAxis ("Vertical");
 
@@ -153,7 +174,8 @@ public class Player : MonoBehaviour
 		}
 
 		lives -= 1;
-
+		cameraShakeDuration = 1.0f;
+		
 		switch (lives)
 		{
 			case 2:

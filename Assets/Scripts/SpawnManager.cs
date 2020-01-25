@@ -86,17 +86,8 @@ public class SpawnManager : MonoBehaviour
 			ammoCrateSpawnTimer = spawnWait * 5;
 			yield return new WaitForSeconds (ammoCrateSpawnTimer);
 			Instantiate (stdAmmoCrate, new Vector3 (Random.Range (-9, 9), Random.Range (-4, -2), 0), Quaternion.identity);
+			canSpawnAmmoCrate = false;
 		}
-	}
-
-	void SpawnStdAmmoCrate()
-	{
-
-		// float x = Random.Range (-5f, 5);
-		// GameObject newAmmoCrate = Instantiate (stdAmmoCrate, new Vector3 (player.gameObject.transform.position.x + x, Random.Range (-4, -2.5f), 0), Quaternion.identity);
-		// Debug.Log (newAmmoCrate);
-		// canSpawnAmmoCrate = false;
-		
 	}
 
 	IEnumerator SpawnEnemyRoutine()
@@ -125,7 +116,7 @@ public class SpawnManager : MonoBehaviour
 			{
 				currentWave = 0;
 			}
-			spawnWait = difficultyStartWait - currentWave * 0.5f;
+			spawnWait = difficultyStartWait - currentWave * 0.25f;
 
 			GameObject requestedEnemy = null;
 			foreach (GameObject enemy in enemyPool)
