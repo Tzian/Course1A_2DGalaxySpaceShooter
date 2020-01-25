@@ -17,11 +17,10 @@ public class UiManager : MonoBehaviour
 
 	[SerializeField] Image livesImage;
 	[SerializeField] Image thrusterFuelImage;
-
-	//[SerializeField] Image standardAmmoCountImage;
+	[SerializeField] Image standardAmmoCountImage;
+	
 	//[SerializeField] Image specialAmmoCountImage;
 	//TODO: the above will replace the below once we have the sprites ready
-	[SerializeField] Text standardAmmoCountText;
 	[SerializeField] Text specialAmmoCountText;
 
 	[Header ("Sprite Arrays"), SerializeField] 
@@ -80,7 +79,7 @@ public class UiManager : MonoBehaviour
 
 	public void UpdateStandardAmmoCount (int stdAmmoCnt)
 	{
-		standardAmmoCountText.text = stdAmmoCnt.ToString();
+		standardAmmoCountImage.sprite = stdAmmoSprites[stdAmmoCnt];
 	}
 
 	public void UpdateSpecialAmmoCount (int spcAmmoCnt)

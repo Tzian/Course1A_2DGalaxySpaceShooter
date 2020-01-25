@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class TripleShot : MonoBehaviour
 {
-	public List <GameObject> myLasers;
+	[SerializeField] List <GameObject> myLasers;
 
 	public void OnEnable()
 	{

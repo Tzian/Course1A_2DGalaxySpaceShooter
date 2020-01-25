@@ -14,15 +14,16 @@ public class Laser : MonoBehaviour
 	void Update()
 	{
 		transform.Translate (Vector3.up * (Time.deltaTime * speed));
-		if (transform.position.y > 10.0f)
+		if (!(transform.position.y > 10.0f))
 		{
-			if (parent == null)
-			{
-				gameObject.SetActive (false);
-				return;
-			}
-
-			parent.gameObject.SetActive (false);
+			return;
 		}
+		if (parent == null)
+		{
+			gameObject.SetActive (false);
+			return;
+		}
+
+		parent.gameObject.SetActive (false);
 	}
 }

@@ -14,9 +14,9 @@ public class SpawnManager : MonoBehaviour
 	[SerializeField] GameObject shipRepairPowerUp;
 	[SerializeField] GameObject stdAmmoCrate;
 #pragma warning restore
-	public int gameDifficulty;
-	public int currentWave;
-	public float difficultyStartWait;
+	int gameDifficulty;
+	int currentWave;
+	float difficultyStartWait;
 
 	bool stopSpawning;
 	List <GameObject> enemyPool;
@@ -26,7 +26,15 @@ public class SpawnManager : MonoBehaviour
 	int laserUpgradeLevel;
 	int shipBuffLevel;
 	float ammoCrateSpawnTimer;
-	public bool canSpawnAmmoCrate;
+	bool canSpawnAmmoCrate;
+
+	public bool CanSpawnAmmoCrate
+	{
+		set
+		{
+			canSpawnAmmoCrate = value;
+		}
+	}
 
 	void Start()
 	{

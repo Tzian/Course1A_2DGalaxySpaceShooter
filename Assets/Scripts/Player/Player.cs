@@ -35,10 +35,10 @@ public class Player : MonoBehaviour
 	[SerializeField] bool tripleShotEnabled;
 	[SerializeField] bool shieldEnabled;
 
-	public int thrusterFuel;
-	public bool fuelRecharging;
-	public bool speedBoostEnabled;
-	public int shieldStrength;
+	int thrusterFuel;
+	bool fuelRecharging;
+	bool speedBoostEnabled;
+	int shieldStrength;
 	SpriteRenderer shieldRenderer;
 
 	bool thrustersOnCd;
@@ -217,7 +217,7 @@ public class Player : MonoBehaviour
 
 	public void StdAmmoPickedUp()
 	{
-		spawnManager.canSpawnAmmoCrate = true;
+		spawnManager.CanSpawnAmmoCrate = true;
 		stdAmmoCount                   = 15;
 		uiManager.UpdateStandardAmmoCount (stdAmmoCount);
 	}

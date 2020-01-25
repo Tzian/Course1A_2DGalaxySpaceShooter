@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class EnemyTwinLasers : MonoBehaviour
 {
-	public List <GameObject> myLasers;
-
+#pragma warning disable 0649
+	[SerializeField] List <GameObject> myLasers;
+#pragma warning restore
 	public void OnEnable()
 	{
 		foreach (GameObject laser in myLasers)
