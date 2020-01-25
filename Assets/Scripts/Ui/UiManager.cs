@@ -6,24 +6,27 @@ using UnityEngine.UI;
 public class UiManager : MonoBehaviour
 {
 #pragma warning disable 0649
-	
+
 	[SerializeField] Text gameOverText;
 	[SerializeField] Text restartLevelText;
 
-	[Header("HUD Displays")]
-	[SerializeField] Text scoreText;
-	[SerializeField] Text highScoreText;
+	[Header ("HUD Displays"), SerializeField]
 	
+	Text scoreText;
+	[SerializeField] Text highScoreText;
+
 	[SerializeField] Image livesImage;
 	[SerializeField] Image thrusterFuelImage;
+
 	//[SerializeField] Image standardAmmoCountImage;
 	//[SerializeField] Image specialAmmoCountImage;
 	//TODO: the above will replace the below once we have the sprites ready
 	[SerializeField] Text standardAmmoCountText;
 	[SerializeField] Text specialAmmoCountText;
 
-	[Header("Sprite Arrays")] 
-	[SerializeField] Sprite[] livesSprites;
+	[Header ("Sprite Arrays"), SerializeField] 
+	
+	Sprite[] livesSprites;
 	[SerializeField] Sprite[] fuelSprites;
 	[SerializeField] Sprite[] stdAmmoSprites;
 	[SerializeField] Sprite[] spcAmmoSprites;
@@ -39,7 +42,7 @@ public class UiManager : MonoBehaviour
 		{
 			Debug.LogError ("Game Manager is NULL");
 		}
-		int highScore = PlayerPrefs.GetInt("HighScore");
+		int highScore = PlayerPrefs.GetInt ("HighScore");
 		highScoreText.text = highScore.ToString();
 		gameOverText.gameObject.SetActive (false);
 		restartLevelText.gameObject.SetActive (false);
@@ -48,7 +51,7 @@ public class UiManager : MonoBehaviour
 
 	public void UpdateScoreText (int updatedScore)
 	{
-		currentScore = updatedScore;
+		currentScore   = updatedScore;
 		scoreText.text = currentScore.ToString();
 	}
 
@@ -61,12 +64,13 @@ public class UiManager : MonoBehaviour
 		}
 
 		livesImage.sprite = livesSprites[lives];
-		if (lives == 0)
+		if (lives != 0)
 		{
-			StartCoroutine (DisplayGameOverText());
-			restartLevelText.gameObject.SetActive (true);
-			gameManager.GameOver();
+			return;
 		}
+		StartCoroutine (DisplayGameOverText());
+		restartLevelText.gameObject.SetActive (true);
+		gameManager.GameOver();
 	}
 
 	public void UpdateThrusterFuel (int thrusterFuel)

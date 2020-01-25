@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(AudioSource))]
+
+[RequireComponent (typeof(AudioSource))]
 public class Player : MonoBehaviour
 {
 #pragma warning disable 0649
@@ -13,7 +14,7 @@ public class Player : MonoBehaviour
 	[SerializeField] AudioClip singleShotAudioClip;
 	[SerializeField] AudioClip tripleShotAudioClip;
 	[SerializeField] AudioClip scatterShotAudioClip;
-	
+
 #pragma warning restore
 	[SerializeField] float speed = 3.5f;
 	[SerializeField] float fireRate = 0.15f;
@@ -45,29 +46,29 @@ public class Player : MonoBehaviour
 	Transform gameCamera;
 	Vector3 cameraStartPos;
 	float cameraShakeDuration;
-	
+
 	void Start()
 	{
-		score        = 0;
-		thrusterFuel = 100;
-		fuelRecharging = false;
-		shieldStrength = 0;
-		thrustersOnCd = false;
-		stdAmmoCount = 15;
+		score               = 0;
+		thrusterFuel        = 100;
+		fuelRecharging      = false;
+		shieldStrength      = 0;
+		thrustersOnCd       = false;
+		stdAmmoCount        = 15;
 		cameraShakeDuration = 0;
 
 		gameCamera = GameObject.Find ("Main Camera").GetComponent <Transform>();
 		if (gameCamera == null)
 		{
-			Debug.LogError("Cannot find camera!");
+			Debug.LogError ("Cannot find camera!");
 		}
 		cameraStartPos = gameCamera.position;
-		gameManager = GameObject.Find ("GameManager").GetComponent <GameManager>();
+		gameManager    = GameObject.Find ("GameManager").GetComponent <GameManager>();
 		if (gameManager == null)
 		{
 			Debug.LogError ("Game Manager is NULL");
 		}
-		
+
 		spawnManager = GameObject.Find ("SpawnManager").GetComponent <SpawnManager>();
 		if (spawnManager == null)
 		{
@@ -89,27 +90,27 @@ public class Player : MonoBehaviour
 		}
 
 		transform.position = new Vector3 (0, -3.5f, 0);
-		shieldRenderer = playerShield.GetComponent <SpriteRenderer>();
+		shieldRenderer     = playerShield.GetComponent <SpriteRenderer>();
 	}
 
 	void Update()
 	{
 		if (cameraShakeDuration > 0)
 		{
-			gameCamera.transform.localPosition = cameraStartPos + Random.insideUnitSphere * 0.2f;
-			cameraShakeDuration -= Time.deltaTime * 1.0f;
+			gameCamera.transform.localPosition =  cameraStartPos + Random.insideUnitSphere * 0.2f;
+			cameraShakeDuration                -= Time.deltaTime * 1.0f;
 		}
 		else
 		{
-			cameraShakeDuration = 0f;
+			cameraShakeDuration                = 0f;
 			gameCamera.transform.localPosition = cameraStartPos;
 		}
-		
+
 		horizontalInput = Input.GetAxis ("Horizontal");
 		verticalInput   = Input.GetAxis ("Vertical");
 
 		ConstrainPlayer();
-		
+
 		if (Time.time > canFire)
 		{
 			if (Input.GetKeyDown (KeyCode.Space) || Input.GetMouseButtonDown (0))
@@ -132,14 +133,14 @@ public class Player : MonoBehaviour
 				uiManager.UpdateStandardAmmoCount (stdAmmoCount);
 			}
 		}
-		
-		uiManager.UpdateThrusterFuel(thrusterFuel);
+
+		uiManager.UpdateThrusterFuel (thrusterFuel);
 
 		if (Input.GetKeyDown (KeyCode.LeftShift) && fuelRecharging == false)
 		{
 			EnableSpeedBoost();
 		}
-		
+
 		if (Input.GetKeyUp (KeyCode.LeftShift))
 		{
 			DisableSpeedBoost();
@@ -174,8 +175,11 @@ public class Player : MonoBehaviour
 		}
 
 		lives -= 1;
-		cameraShakeDuration = 1.0f;
-		
+		if (cameraShakeDuration <= 0f)
+		{
+			cameraShakeDuration = 1.5f;
+		}
+
 		switch (lives)
 		{
 			case 2:
@@ -198,8 +202,8 @@ public class Player : MonoBehaviour
 			{
 				if (lives <= 0)
 				{
-					gameManager.UpdateScore(score);
-					
+					gameManager.UpdateScore (score);
+
 					spawnManager.OnPlayerDeath();
 					Destroy (gameObject);
 				}
@@ -214,12 +218,12 @@ public class Player : MonoBehaviour
 	public void StdAmmoPickedUp()
 	{
 		spawnManager.canSpawnAmmoCrate = true;
-		stdAmmoCount = 15;
+		stdAmmoCount                   = 15;
 		uiManager.UpdateStandardAmmoCount (stdAmmoCount);
 	}
-	
+
 #region shieldsAndRepair
-	
+
 	public void EnableShield()
 	{
 		AudioSource.PlayClipAtPoint (powerUpGainedAudioClip, transform.position);
@@ -278,8 +282,7 @@ public class Player : MonoBehaviour
 	}
 
 #endregion
-	
-	
+
 #region Thrusters
 
 	void EnableSpeedBoost()
@@ -340,7 +343,6 @@ public class Player : MonoBehaviour
 
 #endregion
 
-	
 #region Lasers
 
 	public void EnableTripleShot()
@@ -368,7 +370,7 @@ public class Player : MonoBehaviour
 		yield return new WaitForSeconds (5f);
 		scatterShotEnabled = false;
 	}
-	
+
 	void SpawnSingleShotLaser()
 	{
 		canFire      =  Time.time + fireRate;
@@ -401,7 +403,6 @@ public class Player : MonoBehaviour
 
 #endregion
 
-
 #region Player Movement
 
 	void MovePlayer()
@@ -426,5 +427,4 @@ public class Player : MonoBehaviour
 	}
 
 #endregion
-
 }

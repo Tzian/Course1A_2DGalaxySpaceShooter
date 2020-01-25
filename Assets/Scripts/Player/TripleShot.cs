@@ -19,21 +19,23 @@ public class TripleShot : MonoBehaviour
 		transform.position = Vector3.zero;
 		foreach (GameObject laser in myLasers)
 		{
-			if (laser.name == "LaserFront")
+			switch (laser.name)
 			{
-				laser.transform.position = new Vector3 (0.003f, 0.64f, 0);
-			}
-			else if (laser.name == "LaserLeft")
-			{
-				laser.transform.position = new Vector3 (-0.468f, -0.177f, 0);
-			}
-			else if (laser.name == "LaserRight")
-			{
-				laser.transform.position = new Vector3 (0.472f, -0.177f, 0);
-			}
-			else
-			{
-				Debug.Log ("we have a problem here");
+				case "LaserFront":
+					laser.transform.position = new Vector3 (0.003f, 0.64f, 0);
+					break;
+
+				case "LaserLeft":
+					laser.transform.position = new Vector3 (-0.468f, -0.177f, 0);
+					break;
+
+				case "LaserRight":
+					laser.transform.position = new Vector3 (0.472f, -0.177f, 0);
+					break;
+
+				default:
+					Debug.Log ("we have a problem here");
+					break;
 			}
 
 			laser.gameObject.SetActive (false);

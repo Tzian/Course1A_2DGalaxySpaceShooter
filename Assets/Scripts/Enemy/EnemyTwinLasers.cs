@@ -19,17 +19,19 @@ public class EnemyTwinLasers : MonoBehaviour
 		transform.position = Vector3.zero;
 		foreach (GameObject laser in myLasers)
 		{
-			if (laser.name == "EnemyLaserL")
+			switch (laser.name)
 			{
-				laser.transform.position = new Vector3 (-0.125f, -0.83f, 0);
-			}
-			else if (laser.name == "EnemyLaserR")
-			{
-				laser.transform.position = new Vector3 (0.125f, -0.83f, 0);
-			}
-			else
-			{
-				Debug.Log ("we have a problem here");
+				case "EnemyLaserL":
+					laser.transform.position = new Vector3 (-0.125f, -0.83f, 0);
+					break;
+
+				case "EnemyLaserR":
+					laser.transform.position = new Vector3 (0.125f, -0.83f, 0);
+					break;
+
+				default:
+					Debug.Log ("we have a problem here");
+					break;
 			}
 
 			laser.gameObject.SetActive (false);

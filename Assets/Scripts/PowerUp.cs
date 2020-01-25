@@ -12,6 +12,10 @@ public class PowerUp : MonoBehaviour
 
 	void Update()
 	{
+		if (speed <= 0)
+		{
+			return;
+		}
 		transform.Translate (Vector3.down * (speed * Time.deltaTime));
 
 		if (transform.position.y < -6f)
@@ -47,11 +51,11 @@ public class PowerUp : MonoBehaviour
 				case 3:
 					player.RepairShip();
 					break;
-				
+
 				case 4:
 					player.StdAmmoPickedUp();
 					break;
-				
+
 				default:
 					Debug.Log ("Trying to access a Power Up ID that does not exist!");
 					break;

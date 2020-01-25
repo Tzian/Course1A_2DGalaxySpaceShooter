@@ -17,7 +17,7 @@ public class SpawnManager : MonoBehaviour
 	public int gameDifficulty;
 	public int currentWave;
 	public float difficultyStartWait;
-	
+
 	bool stopSpawning;
 	List <GameObject> enemyPool;
 	float spawnWait;
@@ -27,16 +27,14 @@ public class SpawnManager : MonoBehaviour
 	int shipBuffLevel;
 	float ammoCrateSpawnTimer;
 	public bool canSpawnAmmoCrate;
-	Player player;
-	
+
 	void Start()
 	{
-		stopSpawning = false;
-		canSpawnAmmoCrate = true;
-		currentWave = 0;
+		stopSpawning      = false;
+		currentWave       = 0;
 		enemySpawnedTally = 0;
-		enemyPool    = new List <GameObject>();
-		gameDifficulty = 0;
+		enemyPool         = new List <GameObject>();
+		gameDifficulty    = 0;
 		for (int i = 0; i < 5; i++)
 		{
 			GameObject newEnemy = Instantiate (enemyPrefab, new Vector3 (Random.Range (-9, 9), 8f, 0), Quaternion.identity, enemySpawns.transform);
@@ -48,21 +46,20 @@ public class SpawnManager : MonoBehaviour
 			case 0:
 				difficultyStartWait = 4.5f;
 				break;
+
 			case 1:
 				difficultyStartWait = 3.5f;
 				break;
+
 			case 2:
 				difficultyStartWait = 2.5f;
 				break;
+
 			default:
-				Debug.LogError("You are trying to set an unknown difficulty!!");
+				Debug.LogError ("You are trying to set an unknown difficulty!!");
 				break;
 		}
-		player = GameObject.Find ("Player").GetComponent <Player>();
-		if (player == null)
-		{
-			Debug.LogError ("Player not found, cannot proceed!");
-		}
+		ammoCrateSpawnTimer = difficultyStartWait * 10;
 	}
 
 	public void StartSpawning()
@@ -70,30 +67,29 @@ public class SpawnManager : MonoBehaviour
 		StartCoroutine (SpawnEnemyRoutine());
 		StartCoroutine (SpawnLaserUpgradePowerUpRoutine());
 		StartCoroutine (SpawnShipBuffPowerUpRoutine());
+		canSpawnAmmoCrate = true;
+	}
+
+	void Update()
+	{
+		if (!canSpawnAmmoCrate)
+		{
+			return;
+		}
 		StartCoroutine (StartAmmoCrateSpawnCheckRoutine());
+		canSpawnAmmoCrate = false;
 	}
 
 	IEnumerator StartAmmoCrateSpawnCheckRoutine()
 	{
-		yield return new WaitForSeconds (10f);
-		while (stopSpawning == false)
-		{
-			if (!canSpawnAmmoCrate)
-			{
-				continue;
-			}
-			float time = Time.time;
-			ammoCrateSpawnTimer = spawnWait * 5;
-			yield return new WaitForSeconds (ammoCrateSpawnTimer);
-			Instantiate (stdAmmoCrate, new Vector3 (Random.Range (-9, 9), Random.Range (-4, -2), 0), Quaternion.identity);
-			canSpawnAmmoCrate = false;
-		}
+		yield return new WaitForSeconds (ammoCrateSpawnTimer);
+		GameObject ammoCrate = Instantiate (stdAmmoCrate, new Vector3 (Random.Range (-9, 9), Random.Range (-4, -2), 0), Quaternion.identity);
 	}
 
 	IEnumerator SpawnEnemyRoutine()
 	{
 		yield return new WaitForSeconds (2f);
-		
+
 		while (stopSpawning == false)
 		{
 			if (enemySpawnedTally >= 200)
@@ -116,8 +112,8 @@ public class SpawnManager : MonoBehaviour
 			{
 				currentWave = 0;
 			}
-			spawnWait = difficultyStartWait - currentWave * 0.25f;
-
+			spawnWait           = difficultyStartWait - currentWave * 0.25f;
+			ammoCrateSpawnTimer = spawnWait * 10;
 			GameObject requestedEnemy = null;
 			foreach (GameObject enemy in enemyPool)
 			{
@@ -177,7 +173,7 @@ public class SpawnManager : MonoBehaviour
 			laserUpgradeLevel = 1;
 		}
 	}
-	
+
 	IEnumerator SpawnShipBuffPowerUpRoutine()
 	{
 		float randomStartSpawnTime = Random.Range (40, 71);

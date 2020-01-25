@@ -20,7 +20,7 @@ public class Asteroid : MonoBehaviour
 			Debug.LogError ("Spawn Manager Not Found!!");
 		}
 
-		rotateSpeed = Random.Range (3, 10f);
+		rotateSpeed = Random.Range (5, 10f);
 		randomDir   = Random.Range (0, 2);
 		isColliding = false;
 	}
@@ -39,20 +39,16 @@ public class Asteroid : MonoBehaviour
 
 	void OnTriggerEnter2D (Collider2D other)
 	{
-		if (isColliding)
+		if (!other.CompareTag ("Laser") || isColliding)
 		{
 			return;
 		}
+		isColliding = true;
+		other.gameObject.SetActive (false);
 
-		if (other.CompareTag ("Laser"))
-		{
-			isColliding = true;
-			other.gameObject.SetActive (false);
-
-			Instantiate (explosion, transform.position, Quaternion.identity);
-			StartCoroutine (DelayDeactivate());
-			spawnManager.StartSpawning();
-		}
+		Instantiate (explosion, transform.position, Quaternion.identity);
+		StartCoroutine (DelayDeactivate());
+		spawnManager.StartSpawning();
 	}
 
 	IEnumerator DelayDeactivate()

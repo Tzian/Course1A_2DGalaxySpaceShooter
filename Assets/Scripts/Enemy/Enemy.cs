@@ -1,7 +1,8 @@
 ﻿using System.Collections;
 using UnityEngine;
 
-[RequireComponent(typeof(AudioSource))]
+
+[RequireComponent (typeof(AudioSource))]
 public class Enemy : MonoBehaviour
 {
 	static readonly int OnEnemyDeath = Animator.StringToHash ("OnEnemyDeath");
@@ -128,7 +129,7 @@ public class Enemy : MonoBehaviour
 	{
 		animator.SetTrigger (OnEnemyDeath);
 		speed = 0;
-		AudioSource.PlayClipAtPoint(explosionAudioClip, transform.position);
+		AudioSource.PlayClipAtPoint (explosionAudioClip, transform.position);
 		yield return new WaitForSeconds (2.37f);
 		gameObject.SetActive (false);
 		spriteRenderer.sprite = startingSprite;
