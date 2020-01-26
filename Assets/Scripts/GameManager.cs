@@ -57,6 +57,12 @@ public class GameManager : MonoBehaviour
 		gameOver = true;
 	}
 
+	public void ResumeGame()
+	{
+		pauseUi.gameObject.SetActive (false);
+		Cursor.lockState = CursorLockMode.Locked;
+		Time.timeScale   = 1;
+	}
 	public void ExitToMainMenu()
 	{
 		SaveHighScore();
