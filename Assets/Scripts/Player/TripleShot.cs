@@ -4,8 +4,9 @@ using UnityEngine;
 
 public class TripleShot : MonoBehaviour
 {
+#pragma warning disable 0649
 	[SerializeField] List <GameObject> myLasers;
-
+#pragma warning restore
 	public void OnEnable()
 	{
 		foreach (GameObject laser in myLasers)

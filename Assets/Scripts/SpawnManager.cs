@@ -42,7 +42,8 @@ public class SpawnManager : MonoBehaviour
 		currentWave       = 0;
 		enemySpawnedTally = 0;
 		enemyPool         = new List <GameObject>();
-		gameDifficulty    = 0;
+		gameDifficulty = PlayerPrefs.GetInt ("GameDifficulty");
+		
 		for (int i = 0; i < 5; i++)
 		{
 			GameObject newEnemy = Instantiate (enemyPrefab, new Vector3 (Random.Range (-9, 9), 8f, 0), Quaternion.identity, enemySpawns.transform);

@@ -46,6 +46,7 @@ public class Player : MonoBehaviour
 	Transform gameCamera;
 	Vector3 cameraStartPos;
 	float cameraShakeDuration;
+	int screenShakeAllowed;
 
 	void Start()
 	{
@@ -56,6 +57,7 @@ public class Player : MonoBehaviour
 		thrustersOnCd       = false;
 		stdAmmoCount        = 15;
 		cameraShakeDuration = 0;
+		screenShakeAllowed = PlayerPrefs.GetInt ("ScreenShakeOn");
 
 		gameCamera = GameObject.Find ("Main Camera").GetComponent <Transform>();
 		if (gameCamera == null)
@@ -95,15 +97,18 @@ public class Player : MonoBehaviour
 
 	void Update()
 	{
-		if (cameraShakeDuration > 0)
+		if (screenShakeAllowed == 1)
 		{
-			gameCamera.transform.localPosition =  cameraStartPos + Random.insideUnitSphere * 0.2f;
-			cameraShakeDuration                -= Time.deltaTime * 1.0f;
-		}
-		else
-		{
-			cameraShakeDuration                = 0f;
-			gameCamera.transform.localPosition = cameraStartPos;
+			if (cameraShakeDuration > 0)
+			{
+				gameCamera.transform.localPosition =  cameraStartPos + Random.insideUnitSphere * 0.1f;
+				cameraShakeDuration                -= Time.deltaTime * 1.0f;
+			}
+			else
+			{
+				cameraShakeDuration                = 0f;
+				gameCamera.transform.localPosition = cameraStartPos;
+			}
 		}
 
 		horizontalInput = Input.GetAxis ("Horizontal");

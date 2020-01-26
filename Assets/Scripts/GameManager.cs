@@ -48,10 +48,10 @@ public class GameManager : MonoBehaviour
 		gameOver = true;
 	}
 
-	public void ExitGame()
+	public void ExitToMainMenu()
 	{
 		SaveHighScore();
-		Application.Quit();
+		SceneManager.LoadScene (0); // 0 is the main menu scene
 	}
 
 	public void UpdateScore (int score)
