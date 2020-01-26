@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
@@ -9,6 +10,14 @@ public class GameManager : MonoBehaviour
 #pragma warning restore
 	bool gameOver;
 	int currentScore;
+	int gameDifficulty;
+
+	void Awake()
+	{
+		pauseUi.gameObject.SetActive (false);
+		Time.timeScale = 1;
+		gameDifficulty = PlayerPrefs.GetInt ("GameDifficulty");
+	}
 
 	void Start()
 	{
@@ -62,13 +71,14 @@ public class GameManager : MonoBehaviour
 
 	void SaveHighScore()
 	{
-		int oldHighScore = PlayerPrefs.GetInt ("HighScore");
+		string key = "HighScore" + gameDifficulty.ToString();
+		int oldHighScore = PlayerPrefs.GetInt (key);
 
 		if (currentScore <= oldHighScore)
 		{
 			return;
 		}
-		PlayerPrefs.SetInt ("HighScore", currentScore);
+		PlayerPrefs.SetInt (key, currentScore);
 		PlayerPrefs.Save();
 	}
 }

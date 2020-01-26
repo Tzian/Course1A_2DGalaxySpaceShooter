@@ -14,6 +14,25 @@ public class MainMenu : MonoBehaviour
 
 	void Awake()
 	{
+		if (!PlayerPrefs.HasKey ("GameDifficulty"))
+		{
+			difficultyDropdown.value = 0;
+			PlayerPrefs.SetInt("GameDifficulty", 0);
+		}
+		else
+		{
+			difficultyDropdown.value = PlayerPrefs.GetInt ("GameDifficulty");
+		}
+		if (!PlayerPrefs.HasKey ("ScreenShakeOn"))
+		{
+			screenShakeToggle.isOn = true;
+			PlayerPrefs.SetInt("ScreenShakeOn", 1);
+		}
+		else
+		{
+			int shakeOn = PlayerPrefs.GetInt ("ScreenShakeOn");
+			screenShakeToggle.isOn = shakeOn == 1;
+		}
 		mainPanel.SetActive(true);
 		settingsPanel.SetActive(false);
 	}
@@ -48,21 +67,4 @@ public class MainMenu : MonoBehaviour
 		settingsPanel.SetActive(false);
 		mainPanel.SetActive(true);
 	}
-
-	/*public void SetDifficulty()
-	{
-		PlayerPrefs.SetInt("GameDifficulty", difficultyDropdown.value);
-	}
-
-	public void ScreenShakeToggle()
-	{
-		if (screenShakeToggle.isOn)
-		{
-			PlayerPrefs.SetInt("ScreenShakeOn", 1);
-		}
-		else
-		{
-			PlayerPrefs.SetInt ("ScreenShakeOn", 0);
-		}
-	}*/
 }

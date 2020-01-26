@@ -14,7 +14,7 @@ public class UiManager : MonoBehaviour
 	
 	Text scoreText;
 	[SerializeField] Text highScoreText;
-
+	[SerializeField] Text difficultyLabel;
 	[SerializeField] Image livesImage;
 	[SerializeField] Image thrusterFuelImage;
 	[SerializeField] Image standardAmmoCountImage;
@@ -33,6 +33,8 @@ public class UiManager : MonoBehaviour
 #pragma warning restore
 	GameManager gameManager;
 	int currentScore;
+	int gameDifficulty;
+	string difficulty;
 
 	void Start()
 	{
@@ -41,7 +43,23 @@ public class UiManager : MonoBehaviour
 		{
 			Debug.LogError ("Game Manager is NULL");
 		}
-		int highScore = PlayerPrefs.GetInt ("HighScore");
+		gameDifficulty = PlayerPrefs.GetInt ("GameDifficulty");
+		switch (gameDifficulty) {
+			case 0:
+				difficulty = "Easy";
+				break;
+
+			case 1:
+				difficulty = "Normal";
+				break;
+
+			case 2:
+				difficulty = "Hard";
+				break;
+		}
+		string key = "HighScore" + gameDifficulty.ToString();
+		int highScore = PlayerPrefs.GetInt (key);
+		difficultyLabel.text = difficulty;
 		highScoreText.text = highScore.ToString();
 		gameOverText.gameObject.SetActive (false);
 		restartLevelText.gameObject.SetActive (false);

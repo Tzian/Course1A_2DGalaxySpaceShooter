@@ -118,7 +118,7 @@ public class Player : MonoBehaviour
 
 		if (Time.time > canFire)
 		{
-			if (Input.GetKeyDown (KeyCode.Space) || Input.GetMouseButtonDown (0))
+			if (Input.GetKeyDown (KeyCode.Space) || Input.GetMouseButtonDown (0) && Time.timeScale >= 1)
 			{
 				if (stdAmmoCount > 0)
 				{

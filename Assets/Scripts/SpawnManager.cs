@@ -92,7 +92,7 @@ public class SpawnManager : MonoBehaviour
 	IEnumerator StartAmmoCrateSpawnCheckRoutine()
 	{
 		yield return new WaitForSeconds (ammoCrateSpawnTimer);
-		GameObject ammoCrate = Instantiate (stdAmmoCrate, new Vector3 (Random.Range (-9, 9), Random.Range (-4, -2), 0), Quaternion.identity);
+		GameObject ammoCrate = Instantiate (stdAmmoCrate, new Vector3 (Random.Range (-8, 8), Random.Range (-4.5f, -4.0f), 0), Quaternion.identity);
 	}
 
 	IEnumerator SpawnEnemyRoutine()
