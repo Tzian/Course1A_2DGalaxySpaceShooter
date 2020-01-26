@@ -46,7 +46,7 @@ public class Player : MonoBehaviour
 	Transform gameCamera;
 	Vector3 cameraStartPos;
 	float cameraShakeDuration;
-	int screenShakeAllowed;
+	int screenShakeAllowed = 1;
 
 	void Start()
 	{

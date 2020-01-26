@@ -14,9 +14,6 @@ public class MainMenu : MonoBehaviour
 
 	void Awake()
 	{
-		PlayerPrefs.SetInt ("ScreenShakeOn", 1);
-		PlayerPrefs.SetInt ("GameDifficulty", 0);
-
 		mainPanel.SetActive(true);
 		settingsPanel.SetActive(false);
 	}
