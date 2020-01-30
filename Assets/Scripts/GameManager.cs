@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.SceneManagement;
 
 
@@ -14,7 +13,7 @@ public class GameManager : MonoBehaviour
 
 	void Awake()
 	{
-		pauseUi.gameObject.SetActive (false);
+		pauseUi.enabled = false;
 		Time.timeScale = 1;
 		gameDifficulty = PlayerPrefs.GetInt ("GameDifficulty");
 	}
@@ -39,12 +38,12 @@ public class GameManager : MonoBehaviour
 			{
 				case 1:
 					Time.timeScale = 0;
-					pauseUi.gameObject.SetActive (true);
+					pauseUi.enabled = true;
 					Cursor.lockState = CursorLockMode.None;
 					return;
 
 				case 0:
-					pauseUi.gameObject.SetActive (false);
+					pauseUi.enabled = false;
 					Cursor.lockState = CursorLockMode.Locked;
 					Time.timeScale   = 1;
 					break;
@@ -59,7 +58,7 @@ public class GameManager : MonoBehaviour
 
 	public void ResumeGame()
 	{
-		pauseUi.gameObject.SetActive (false);
+		pauseUi.enabled = false;
 		Cursor.lockState = CursorLockMode.Locked;
 		Time.timeScale   = 1;
 	}
@@ -77,7 +76,7 @@ public class GameManager : MonoBehaviour
 
 	void SaveHighScore()
 	{
-		string key = "HighScore" + gameDifficulty.ToString();
+		string key = "HighScore" + gameDifficulty;
 		int oldHighScore = PlayerPrefs.GetInt (key);
 
 		if (currentScore <= oldHighScore)

@@ -92,7 +92,9 @@ public class UiManager : MonoBehaviour
 
 	public void UpdateThrusterFuel (int thrusterFuel)
 	{
-		thrusterFuelImage.fillAmount = (float) thrusterFuel / 100;
+		int spriteNo = Mathf.CeilToInt (thrusterFuel / 20f);
+		Debug.Log(spriteNo + " & " + thrusterFuel);
+		thrusterFuelImage.sprite = fuelSprites [spriteNo];
 	}
 
 	public void UpdateStandardAmmoCount (int stdAmmoCnt)
